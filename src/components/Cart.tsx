@@ -14,20 +14,14 @@ import {
 import { Button } from './ui/button';
 import { IProduct } from '@/types/globalTypes';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { addToCart, removeFromCart } from '@/redux/features/cart/cartSlice';
+import { addToCart, removeFromCart, removeOne } from '@/redux/features/cart/cartSlice';
 
 export default function Cart() {
 
-  const {products} = useAppSelector((state) => state.cart);
+  const {products, total} = useAppSelector((state) => state.cart);
   const dispatch = useAppDispatch();
-
   console.log(products)
-  //! Dummy data
-
-  
-  const total = 0;
-
-  //! **
+ 
 
   return (
     <Sheet>
@@ -63,7 +57,7 @@ export default function Cart() {
                 <Button onClick={() => dispatch(addToCart(product))}>
                   <HiOutlinePlus size="20" />
                 </Button>
-                <Button>
+                <Button onClick={() => dispatch(removeOne(product))}>
                   <HiMinus size="20" />
                 </Button>
                 <Button onClick={() => dispatch(removeFromCart(product))}
