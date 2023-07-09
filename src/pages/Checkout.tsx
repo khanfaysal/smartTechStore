@@ -6,13 +6,21 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppSelector } from '@/redux/hook';
-import { IProduct } from '@/types/globalTypes';
 
 import { useState } from 'react';
 
 export default function Checkout() {
   const [scheduled, setScheduled] = useState<boolean>(false);
-const {products} = useAppSelector(state => state.cart)
+  const {products} = useAppSelector(state => state.cart)
+
+  // calculate the subtotal
+  const subTotal = products.reduce((total, product) => {
+    return total + product.price * product.quantity!;
+  }, 0)
+
+  // calculate the total
+  const deliveryCost = 4.5;
+  const total = (subTotal + deliveryCost).toFixed(2);
 
   return (
     <div className="flex justify-center items-center h-[calc(100vh-80px)] gap-10 text-primary">
@@ -117,7 +125,7 @@ const {products} = useAppSelector(state => state.cart)
           <div className="space-y-2">
             <div className="flex justify-between text-lg">
               <p>Subtotal</p>
-              <p>77.90$</p>
+              <p>{subTotal}</p>
             </div>
             <div className="flex justify-between text-lg">
               <p>Delivery</p>
@@ -125,7 +133,7 @@ const {products} = useAppSelector(state => state.cart)
             </div>
             <div className="flex justify-between text-xl font-bold">
               <p>Total</p>
-              <p>81.95$</p>
+              <p>{total}</p>
             </div>
             <Button className="w-full">Checkout</Button>
           </div>
