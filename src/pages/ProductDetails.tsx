@@ -10,7 +10,7 @@ export default function ProductDetails() {
   //! Temporary code, should be replaced with redux
   const [data, setData] = useState<IProduct[]>([]);
   useEffect(() => {
-    fetch('../../public/data.json')
+    fetch('../../public/data-for-db.json')
       .then((res) => res.json())
       .then((data) => setData(data));
   }, []);
