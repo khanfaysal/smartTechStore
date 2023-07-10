@@ -14,9 +14,11 @@ export default function Checkout() {
   const {products} = useAppSelector(state => state.cart)
 
   // calculate the subtotal
-  const subTotal = products.reduce((total, product) => {
+  let subTotal = products.reduce((total, product) => {
     return total + product.price * product.quantity!;
-  }, 0)
+  }, 0);
+  
+  subTotal = Number(subTotal.toFixed(2));
 
   // calculate the total
   const deliveryCost = 4.5;
