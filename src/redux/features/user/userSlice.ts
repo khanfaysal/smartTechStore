@@ -5,6 +5,8 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "fire
 
 interface IUserState {
     user: {
+        [x: string]: ReactNode;
+        image: string | undefined;
         email: string | null;
     };
     isLoading: boolean;

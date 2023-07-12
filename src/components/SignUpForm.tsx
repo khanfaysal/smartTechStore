@@ -10,6 +10,10 @@ import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import { createUser } from '@/redux/features/user/userSlice';
 import { useAppDispatch } from '@/redux/hook';
+import { UserCredential, signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '@/lib/firebase.config';
+import { useState} from 'react';
+
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -28,8 +32,23 @@ export function SignupForm({ className, ...props }: UserAuthFormProps) {
 const dispatch = useAppDispatch()
 
   const onSubmit = (data: SignupFormInputs) => {
-    
+
     dispatch(createUser({email: data.email, password: data.password}))
+  };
+
+  // google signup
+
+  const [value, setValue] = useState('');
+
+  const handleGoogleSubmit = () => {
+    signInWithPopup(auth, provider)
+      .then((result: UserCredential) => {
+        const email = result.user?.email;
+        setValue(email || '');
+      })
+      .catch((error) => {
+        console.error('Google sign-up error:', error);
+      });
   };
 
   return (
@@ -81,6 +100,7 @@ const dispatch = useAppDispatch()
         </div>
       </div>
       <Button
+        onClick={handleGoogleSubmit}
         variant="outline"
         type="button"
         className="flex items-center justify-between"

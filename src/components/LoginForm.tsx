@@ -9,9 +9,12 @@ import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { loginUser } from '@/redux/features/user/userSlice';
-import { useNavigate } from 'react-router-dom';
+import { loginUser, setUser } from '@/redux/features/user/userSlice';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
+import Home from '@/pages/Home';
+import { UserCredential, signInWithPopup } from 'firebase/auth';
+import { auth, provider } from '@/lib/firebase.config';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -30,6 +33,9 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
   const {user, isLoading} = useAppSelector((state) => state.user)
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
+  const location = useLocation()
+
+  const from = location?.state?.from?.pathname || '/';
 
   const onSubmit = (data: LoginFormInputs) => {
    dispatch(loginUser({email: data.email, password: data.password}))
@@ -37,9 +43,32 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
 
  useEffect(() => {
   if(user.email && !isLoading) {
-    navigate("/")
+    navigate(from, {replace: true})
   }
- }, [user.email, isLoading, navigate])
+ }, [user.email, isLoading, navigate, from])
+
+//  google login
+const handleGoogleSubmit = () => {
+  signInWithPopup(auth, provider)
+    .then((result: UserCredential) => {
+      const email = result.user?.email;
+      dispatch(setUser(email || null));
+      localStorage.setItem('email', email || '');
+    })
+    .catch((error) => {
+      console.error('Google login error:', error);
+    });
+};
+
+useEffect(() => {
+  const email = localStorage.getItem('email');
+  if (email) {
+    dispatch(setUser(email));
+  }
+}, [dispatch]);
+
+
+
   return (
     <div className={cn('grid gap-6', className)} {...props}>
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -81,7 +110,11 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
           </span>
         </div>
       </div>
+      {user.email ? (
+      <Home />
+    ) : (
       <Button
+        onClick={handleGoogleSubmit}
         variant="outline"
         type="button"
         className="flex items-center justify-between"
@@ -89,6 +122,7 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
         <p>Google</p>
         <FcGoogle />
       </Button>
+    )}
     </div>
   );
 }
