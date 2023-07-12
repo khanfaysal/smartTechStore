@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from '@/assets/images/technet-logo-white.png';
+import logo from '@/assets/images/logo-no-background.png';
 import { RiFacebookBoxFill, RiInstagramLine } from 'react-icons/ri';
 export default function Footer() {
   const date = new Date();

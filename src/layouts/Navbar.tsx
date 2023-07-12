@@ -11,7 +11,7 @@ import {
 } from '../components/ui/dropdown-menu';
 import { HiOutlineSearch } from 'react-icons/hi';
 import Cart from '../components/Cart';
-import logo from '../assets/images/technet-logo.png';
+import logo from '../assets/images/logo-no-background.png';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
 import { getAuth, signOut } from 'firebase/auth';
 import { setUser } from '@/redux/features/user/userSlice';
@@ -32,7 +32,9 @@ export default function Navbar() {
       <div className="h-full w-full bg-white/60">
         <div className="flex items-center justify-between w-full md:max-w-7xl h-full mx-auto ">
           <div>
-            <img className="h-8" src={logo} alt="log" />
+            <Link to="/">
+            <img className="h-10" src={logo} alt="log" />
+            </Link>
           </div>
           <div>
             <ul className="flex items-center">
