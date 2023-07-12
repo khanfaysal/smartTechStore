@@ -52,6 +52,8 @@ const handleGoogleSubmit = () => {
   signInWithPopup(auth, provider)
     .then((result: UserCredential) => {
       const email = result.user?.email;
+      const imageurl = result.user?.photoURL;
+      console.log(email, imageurl, 'from login component')
       dispatch(setUser(email || null));
       localStorage.setItem('email', email || '');
     })

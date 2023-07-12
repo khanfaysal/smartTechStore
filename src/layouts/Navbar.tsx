@@ -19,6 +19,7 @@ import { setUser } from '@/redux/features/user/userSlice';
 export default function Navbar() {
 
   const {user} = useAppSelector((state) => state.user);
+  console.log(user?.image, 'from navbar')
 
   const dispatch = useAppDispatch();
 
@@ -32,6 +33,8 @@ export default function Navbar() {
       console.error('Logout error:', error);
     });
   }
+  
+  console.log(user.image, "google avatar");
   return (
     <nav className="w-full h-16 fixed top backdrop-blur-lg z-10">
       <div className="h-full w-full bg-white/60">
@@ -41,6 +44,7 @@ export default function Navbar() {
               {user?.email ? (
                 <Avatar>
                   <AvatarImage src={user.image} alt="User Avatar" />
+    
                   <AvatarFallback>{user.initials}</AvatarFallback>
                 </Avatar>
               ) : (

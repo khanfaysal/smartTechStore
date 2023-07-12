@@ -1,7 +1,8 @@
 
-import { auth } from "@/lib/firebase.config";
+import { auth, provider } from "@/lib/firebase.config";
 import {PayloadAction, createAsyncThunk, createSlice} from "@reduxjs/toolkit";
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup } from "firebase/auth";
+import { ReactNode } from "react";
 
 interface IUserState {
     user: {
@@ -21,7 +22,8 @@ interface ICredential {
 }
 const initialState: IUserState ={
     user: {
-        email: null,
+    email: null,
+    image: undefined,
     },
     isLoading: false,
     isError: false,
@@ -43,6 +45,25 @@ export const loginUser = createAsyncThunk(
         return data.user.email;
     }
 )
+
+export const loginWithGoogle = createAsyncThunk(
+    'user/loginWithGoogle',
+    async () => {
+      const result = await signInWithPopup(auth, provider);
+      const user = result.user;
+      console.log(user.photoURL, 'user')
+  
+      const image = user.photoURL || 'default';
+      console.log(image, 'image google user')
+      const initials = user.displayName ? user.displayName.charAt(0) : ''; 
+  
+      return {
+        email: user.email,
+        image: image,
+        initials: initials,
+      };
+    }
+  );
 
 const userSlice = createSlice({
     name: 'product',
