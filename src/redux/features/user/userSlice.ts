@@ -112,6 +112,26 @@ const userSlice = createSlice({
             state.error = action.error.message!;
             
         })
+        .addCase(loginWithGoogle.pending, (state) => {
+            state.isLoading = true;
+            state.isError = false;
+            state.error = null;
+            
+        })
+        .addCase(loginWithGoogle.fulfilled, (state, action) => {
+            state.user.email = action.payload.email;
+            state.user.image = action.payload.image;
+            state.isLoading = false;
+            
+        })
+        .addCase(loginWithGoogle.rejected, (state, action) => {
+            state.user.email = null;
+            state.user.image = undefined;
+            state.isLoading = false;
+            state.isError = true;
+            state.error = action.error.message!;
+            
+        })
     }
 })
 
