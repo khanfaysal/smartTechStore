@@ -1,4 +1,4 @@
-import React from 'react';
+
 import logo from '@/assets/images/logo-no-background.png';
 import { RiFacebookBoxFill, RiInstagramLine } from 'react-icons/ri';
 export default function Footer() {
@@ -34,7 +34,7 @@ export default function Footer() {
       <div className="flex w-full mt-20 gap-5">
         <p>Privacy Policy</p>
         <p>Terms & Condition</p>
-        <p className="ml-auto"> &#169; TechNet {year}</p>
+        <p className="ml-auto"> &#169; Tech Store {year}</p>
       </div>
     </div>
   );

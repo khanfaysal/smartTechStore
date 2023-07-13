@@ -8,11 +8,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
-import { createUser } from '@/redux/features/user/userSlice';
+import { createUser, loginWithGoogle, setUser, setUserImage } from '@/redux/features/user/userSlice';
 import { useAppDispatch } from '@/redux/hook';
-import { UserCredential, signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '@/lib/firebase.config';
-import { useState} from 'react';
+import { useEffect } from 'react';
 
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
@@ -36,20 +34,23 @@ const dispatch = useAppDispatch()
     dispatch(createUser({email: data.email, password: data.password}))
   };
 
-  // google signup
-
-  const [value, setValue] = useState('');
-
+  //  google login
   const handleGoogleSubmit = () => {
-    signInWithPopup(auth, provider)
-      .then((result: UserCredential) => {
-        const email = result.user?.email;
-        setValue(email || '');
-      })
-      .catch((error) => {
-        console.error('Google sign-up error:', error);
-      });
+    dispatch(loginWithGoogle() as any).then((action: any) => {
+      const { email, image } = action.payload;
+      localStorage.setItem('email', email);
+      localStorage.setItem('image', image || '');
+    });
   };
+
+  useEffect(() => {
+    const email = localStorage.getItem('email');
+    const image = localStorage.getItem('image');
+    if (email) {
+      dispatch(setUser(email));
+      dispatch(setUserImage(image || undefined));
+    }
+  }, [dispatch]);
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>

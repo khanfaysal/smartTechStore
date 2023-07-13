@@ -1,6 +1,3 @@
-'use client';
-
-import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -9,12 +6,11 @@ import { Label } from '@/components/ui/label';
 import { useForm } from 'react-hook-form';
 import { FcGoogle } from 'react-icons/fc';
 import { useAppDispatch, useAppSelector } from '@/redux/hook';
-import { loginUser, setUser } from '@/redux/features/user/userSlice';
+import { loginUser, loginWithGoogle, setUser } from '@/redux/features/user/userSlice';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import Home from '@/pages/Home';
-import { UserCredential, signInWithPopup } from 'firebase/auth';
-import { auth, provider } from '@/lib/firebase.config';
+import { setUserImage } from '@/redux/features/user/userSlice';
 
 type UserAuthFormProps = React.HTMLAttributes<HTMLDivElement>;
 
@@ -30,46 +26,40 @@ export function LoginForm({ className, ...props }: UserAuthFormProps) {
     formState: { errors },
   } = useForm<LoginFormInputs>();
 
-  const {user, isLoading} = useAppSelector((state) => state.user)
-  const dispatch = useAppDispatch()
-  const navigate = useNavigate()
-  const location = useLocation()
+  const { user, isLoading } = useAppSelector((state) => state.user);
+  const dispatch = useAppDispatch();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const from = location?.state?.from?.pathname || '/';
 
   const onSubmit = (data: LoginFormInputs) => {
-   dispatch(loginUser({email: data.email, password: data.password}))
+    dispatch(loginUser({ email: data.email, password: data.password }));
   };
 
- useEffect(() => {
-  if(user.email && !isLoading) {
-    navigate(from, {replace: true})
-  }
- }, [user.email, isLoading, navigate, from])
+  useEffect(() => {
+    if (user.email && !isLoading) {
+      navigate(from, { replace: true });
+    }
+  }, [user.email, isLoading, navigate, from]);
 
-//  google login
-const handleGoogleSubmit = () => {
-  signInWithPopup(auth, provider)
-    .then((result: UserCredential) => {
-      const email = result.user?.email;
-      const imageurl = result.user?.photoURL;
-      console.log(email, imageurl, 'from login component')
-      dispatch(setUser(email || null));
-      localStorage.setItem('email', email || '');
-    })
-    .catch((error) => {
-      console.error('Google login error:', error);
+  //  google login
+  const handleGoogleSubmit = () => {
+    dispatch(loginWithGoogle() as any).then((action: any) => {
+      const { email, image } = action.payload;
+      localStorage.setItem('email', email);
+      localStorage.setItem('image', image || '');
     });
-};
+  };
 
-useEffect(() => {
-  const email = localStorage.getItem('email');
-  if (email) {
-    dispatch(setUser(email));
-  }
-}, [dispatch]);
-
-
+  useEffect(() => {
+    const email = localStorage.getItem('email');
+    const image = localStorage.getItem('image');
+    if (email) {
+      dispatch(setUser(email));
+      dispatch(setUserImage(image || undefined));
+    }
+  }, [dispatch]);
 
   return (
     <div className={cn('grid gap-6', className)} {...props}>
@@ -99,7 +89,7 @@ useEffect(() => {
             />
             {errors.password && <p>{errors.password.message}</p>}
           </div>
-          <Button>Login with email</Button>
+          <Button type="submit">Login with email</Button>
         </div>
       </form>
       <div className="relative">
@@ -113,18 +103,18 @@ useEffect(() => {
         </div>
       </div>
       {user.email ? (
-      <Home />
-    ) : (
-      <Button
-        onClick={handleGoogleSubmit}
-        variant="outline"
-        type="button"
-        className="flex items-center justify-between"
-      >
-        <p>Google</p>
-        <FcGoogle />
-      </Button>
-    )}
+        <Home />
+      ) : (
+        <Button
+          onClick={handleGoogleSubmit}
+          variant="outline"
+          type="button"
+          className="flex items-center justify-between"
+        >
+          <p>Google</p>
+          <FcGoogle />
+        </Button>
+      )}
     </div>
   );
 }
